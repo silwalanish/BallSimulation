@@ -1,7 +1,7 @@
 const MIN_BALL_SIZE = 5;      // Min ball size
 const MAX_BALL_SIZE = 15;     // Max ball size
-const MIN_BALL_SPEED = 1;     // Min ball speed
-const MAX_BALL_SPEED = 2;     // Max ball speed
+const MIN_BALL_SPEED = 5;     // Min ball speed
+const MAX_BALL_SPEED = 10;     // Max ball speed
 const N_BALL = 50;           // Number of balls
 const WIDTH = window.innerWidth - 1;    // Width of the screen
 const HEIGHT = window.innerHeight - 4;  // Height of the screen
@@ -176,7 +176,7 @@ class Ball{
     this.pos = pos;
     this.vel = vel;
     this.size = size;
-    this.mass = size;
+    this.mass = mass || size;
     this.color = getRandomColor();
   }
 
@@ -295,7 +295,7 @@ class Simulation{
     for (let i = 0; i < this.numBalls; i++) {
       let ball = new Ball(
         this.getRandomPos(),
-        this.getRandomDir(),
+        this.getRandomDir().mul(this.getRandomSpeed()),
         getRandom(MIN_BALL_SIZE, MAX_BALL_SIZE));
 
       do{
@@ -440,7 +440,7 @@ class Simulation{
    */
   clear () {
     this.context.beginPath();
-    this.context.fillStyle = "rgba(0, 0, 0, 0.2)";
+    this.context.fillStyle = "rgba(0, 0, 0, 1)";
     this.context.fillRect(0, 0, this.width, this.height);
     this.context.closePath();
   }
