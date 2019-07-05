@@ -363,12 +363,12 @@ class Simulation{
   }
 
   /**
-   * Resolves the collision between two balls
+   * Resolves the collision between two balls using elastic collision
    * 
    * @param {Ball} ballA - a ball
    * @param {Ball} ballB - another ball
    */
-  resolve (ballA, ballB) {
+  resolveElastic (ballA, ballB) {
     const velDiff = Vector.sub(ballA.vel, ballB.vel);
     const posDiff = Vector.sub(ballB.pos, ballA.pos);
     
@@ -387,16 +387,26 @@ class Simulation{
       const v1 = new Vector(u1.x * massDiff / totalMass + u2.x * 2 * mb / totalMass, u1.y).rotate(-angle);
       const v2 = new Vector(u2.x * (-massDiff) / totalMass + u1.x * 2 * mb / totalMass, u2.y).rotate(-angle);
 
-      ballA.vel.x = v1.x;
-      ballA.vel.y = v1.y;
+      ballA.vel = v1;
 
-      ballB.vel.x = v2.x;
-      ballB.vel.y = v2.y;
+      ballB.vel = v2;
     }else{
-      let backVel = Vector.normalize(ballA.vel).rotate(Math.PI);
-      ballA.pos.x += backVel.x * (ballA.size + ballB.size - posDiff.x);
-      ballA.pos.y += backVel.y * (ballA.size + ballB.size - posDiff.y);
+      // let backVel = Vector.normalize(ballA.vel).rotate(Math.PI);
+      // ballA.pos.x += backVel.x * (ballA.size + ballB.size - posDiff.x);
+      // ballA.pos.y += backVel.y * (ballA.size + ballB.size - posDiff.y);
     }
+  }
+
+  /**
+   * Resolves the collision between two balls
+   * 
+   * @param {Ball} ballA - a ball
+   * @param {Ball} ballB - another ball
+   */
+  resolve(ballA, ballB){
+    let temp = ballA.vel;
+    ballA.vel = ballB.vel;
+    ballB.vel = temp;
   }
 
   /**
