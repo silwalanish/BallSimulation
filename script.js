@@ -2,7 +2,7 @@ const MIN_BALL_SIZE = 5;      // Min ball size
 const MAX_BALL_SIZE = 15;     // Max ball size
 const MIN_BALL_SPEED = 1;     // Min ball speed
 const MAX_BALL_SPEED = 2;     // Max ball speed
-const N_BALL = 250;           // Number of balls
+const N_BALL = 50;           // Number of balls
 const WIDTH = window.innerWidth - 1;    // Width of the screen
 const HEIGHT = window.innerHeight - 4;  // Height of the screen
 
@@ -295,7 +295,7 @@ class Simulation{
     for (let i = 0; i < this.numBalls; i++) {
       let ball = new Ball(
         this.getRandomPos(),
-        this.getRandomDir().mul(this.getRandomSpeed()),
+        this.getRandomDir(),
         getRandom(MIN_BALL_SIZE, MAX_BALL_SIZE));
 
       do{
@@ -315,7 +315,7 @@ class Simulation{
       if(ball === this.balls[j]){
         continue;
       }
-      if(Vector.distance(ball.pos, this.balls[j].pos) < ball.size + this.balls[j].size){
+      if(Vector.distance(ball.pos, this.balls[j].pos) <= ball.size + this.balls[j].size){
         return true;
       }
     }
@@ -356,7 +356,7 @@ class Simulation{
         continue;
       }
 
-      if(Vector.distance(ballA.pos, ballB.pos) - (ballA.size + ballB.size) < 0) {
+      if(Vector.distance(Vector.add(ballA.pos, ballA.vel), Vector.add(ballB.pos, ballB.vel)) - (ballA.size + ballB.size) <= 0) {
         this.resolve(ballA, ballB);
       }
     }
@@ -388,12 +388,7 @@ class Simulation{
       const v2 = new Vector(u2.x * (-massDiff) / totalMass + u1.x * 2 * mb / totalMass, u2.y).rotate(-angle);
 
       ballA.vel = v1;
-
       ballB.vel = v2;
-    }else{
-      // let backVel = Vector.normalize(ballA.vel).rotate(Math.PI);
-      // ballA.pos.x += backVel.x * (ballA.size + ballB.size - posDiff.x);
-      // ballA.pos.y += backVel.y * (ballA.size + ballB.size - posDiff.y);
     }
   }
 
@@ -435,7 +430,7 @@ class Simulation{
       if(this.isPlaying){
         this.pause();
       }else{
-        this.start();
+        this.play();
       }
     }
   }
@@ -445,7 +440,7 @@ class Simulation{
    */
   clear () {
     this.context.beginPath();
-    this.context.fillStyle = "#000000";
+    this.context.fillStyle = "rgba(0, 0, 0, 0.2)";
     this.context.fillRect(0, 0, this.width, this.height);
     this.context.closePath();
   }
@@ -477,24 +472,37 @@ class Simulation{
    * Run the simulation
    */
   run () {
-    this.clear();
-    this.update();
-    this.render();
+    if(this.isPlaying){
+      this.clear();
+      this.update();
+      this.render();
+    }
+    requestAnimationFrame(() => {
+      this.run();
+    });
   }
 
   /**
    * Start the simulation
    */
-  start() {
-    this.animator = setInterval(() => { this.run(); }, 1000 / this.fps);
+  start () {
+    //this.animator = setInterval(() => { this.run(); }, 1000 / this.fps);
+    this.isPlaying = true;
+    this.run();
+  }
+
+  /**
+   * Play the simulation
+   */
+  play () {
     this.isPlaying = true;
   }
 
   /**
    * Pause the simulation
    */
-  pause() {
-    clearInterval(this.animator);
+  pause () {
+    //clearInterval(this.animator);
     this.isPlaying = false;
   }
 
